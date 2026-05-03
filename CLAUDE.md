@@ -32,6 +32,12 @@ Every API route follows this exact sequence:
 - Route params (`params`, `searchParams`) in layouts and pages are async — always `await` them
 - Server Actions use `'use server'` directive
 - `createServerClient()` in `lib/supabase/server.ts` is async — always `await` it
+- **Never render `<script>` tags directly in JSX** — React 19 warns "Scripts inside React
+  components are never executed when rendering on the client" even for Server Components.
+  Always use `next/script` with the appropriate strategy instead:
+  - Inline FOUC/init scripts: `<Script id="…" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: code }}>`
+  - Third-party scripts: `strategy="afterInteractive"` or `"lazyOnload"`
+  - `beforeInteractive` extracts the script from React's tree entirely and hoists it to `<head>`
 
 ## Do Not Modify Without Explicit Instruction
 - `lib/supabase/client.ts` and `lib/supabase/server.ts`

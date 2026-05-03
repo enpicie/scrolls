@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { SignOutMenuItem } from '@/components/auth/sign-out-button'
 import { NavSignIn } from '@/components/auth/nav-sign-in'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { ScrollText, Plus } from 'lucide-react'
 
 export async function Nav() {
@@ -68,6 +69,7 @@ export async function Nav() {
         {/* Right side */}
         {user ? (
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Button size="sm" asChild>
               <Link href="/scrolls/new">
                 <Plus className="mr-1.5 h-4 w-4" />
@@ -95,7 +97,10 @@ export async function Nav() {
             </DropdownMenu>
           </div>
         ) : (
-          <NavSignIn />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <NavSignIn />
+          </div>
         )}
       </nav>
     </header>

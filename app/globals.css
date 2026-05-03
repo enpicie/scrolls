@@ -41,23 +41,25 @@
 
 :root {
   --radius: 0.5rem;
-  --background: oklch(1 0 0);
+  /* Parchment palette — hue 88 (warm amber), low chroma, high lightness.
+     Reads as warm white / aged paper in context without looking yellow. */
+  --background: oklch(0.984 0.016 88);
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
+  --card: oklch(0.978 0.013 88);
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
+  --popover: oklch(0.984 0.016 88);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.962 0.013 88);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --muted: oklch(0.962 0.013 88);
+  --muted-foreground: oklch(0.520 0.010 88);
+  --accent: oklch(0.962 0.013 88);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --border: oklch(0.906 0.014 88);
+  --input: oklch(0.906 0.014 88);
   --ring: oklch(0.708 0 0);
   /* Scrolls type colors — light mode */
   --scroll-general: oklch(0.546 0.245 262.881);       /* indigo-600 — primary brand */
@@ -98,4 +100,18 @@
 
 body {
   font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+}
+
+/* Smooth theme transitions — fade color/background/border when .dark is added or removed.
+   Scoped to users who have not requested reduced motion.
+   The * selector has lower specificity than component-level Tailwind transition classes,
+   so interactive elements (buttons, links) keep their own faster hover transitions. */
+@media (prefers-reduced-motion: no-preference) {
+  *,
+  *::before,
+  *::after {
+    transition-property: color, background-color, border-color, fill, stroke, box-shadow;
+    transition-duration: 250ms;
+    transition-timing-function: ease;
+  }
 }
