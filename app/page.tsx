@@ -1,9 +1,16 @@
 import Link from 'next/link'
+import { createServerClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { TypeBadge } from '@/components/scroll/type-badge'
+import { HeroSignIn } from '@/components/auth/hero-sign-in'
 import { ArrowRight, BookOpen, Layers, Sparkles } from 'lucide-react'
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const supabase = await createServerClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
   return (
     <div className="flex flex-col">
       {/* Hero */}
@@ -21,17 +28,34 @@ export default function LandingPage() {
             Experienced engineers publish the standards they actually use. Developers at any level
             discover, compose, and apply them — to start new projects right or audit existing ones.
           </p>
-          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <Button size="lg" asChild>
-              <Link href="/browse">
-                Browse specs
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/docs">How it works</Link>
-            </Button>
-          </div>
+
+          {user ? (
+            // Authenticated: go to dashboard or browse
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+              <Button size="lg" asChild>
+                <Link href="/dashboard">
+                  Go to dashboard
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/browse">Browse specs</Link>
+              </Button>
+            </div>
+          ) : (
+            // Unauthenticated: sign in or browse
+            <div className="flex flex-col items-center gap-6">
+              <HeroSignIn />
+              <div className="flex items-center gap-4">
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/browse">
+                    Browse without signing in
+                    <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SignOutMenuItem } from '@/components/auth/sign-out-button'
+import { NavSignIn } from '@/components/auth/nav-sign-in'
 import { ScrollText, Plus } from 'lucide-react'
 
 export async function Nav() {
@@ -18,7 +19,8 @@ export async function Nav() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Fetch the user's display profile from public.users if authenticated
+  // Fetch the user's display profile from public.users if authenticated.
+  // Falls back to email-derived values if the sync trigger hasn't run yet.
   let profile: { display_name: string; avatar_url: string | null } | null = null
   if (user) {
     const { data } = await supabase
@@ -26,7 +28,10 @@ export async function Nav() {
       .select('display_name, avatar_url')
       .eq('id', user.id)
       .single()
-    profile = data
+    profile = data ?? {
+      display_name: user.email?.split('@')[0] ?? 'Account',
+      avatar_url: user.user_metadata?.avatar_url ?? null,
+    }
   }
 
   const initials = profile?.display_name
@@ -61,7 +66,7 @@ export async function Nav() {
         <div className="flex-1" />
 
         {/* Right side */}
-        {user && profile ? (
+        {user ? (
           <div className="flex items-center gap-2">
             <Button size="sm" asChild>
               <Link href="/scrolls/new">
@@ -73,13 +78,13 @@ export async function Nav() {
               <DropdownMenuTrigger asChild>
                 <button className="rounded-full ring-2 ring-transparent transition hover:ring-border focus-visible:outline-none focus-visible:ring-ring">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={profile.avatar_url ?? undefined} alt={profile.display_name} />
+                    <AvatarImage src={profile?.avatar_url ?? undefined} alt={profile?.display_name} />
                     <AvatarFallback className="text-xs">{initials}</AvatarFallback>
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <div className="px-2 py-1.5 text-sm font-medium">{profile.display_name}</div>
+                <div className="px-2 py-1.5 text-sm font-medium">{profile?.display_name}</div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard">Dashboard</Link>
@@ -90,11 +95,7 @@ export async function Nav() {
             </DropdownMenu>
           </div>
         ) : (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/?signin=1">Sign in</Link>
-            </Button>
-          </div>
+          <NavSignIn />
         )}
       </nav>
     </header>
