@@ -30,8 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — .env.example is committed (safe, no real values)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -51,3 +52,6 @@ supabase/.temp/
 
 # Logs
 *.log
+
+# Sentry Config File
+.env.sentry-build-plugin

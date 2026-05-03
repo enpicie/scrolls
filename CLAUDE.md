@@ -4,7 +4,7 @@ Next.js 16 (App Router), React 19, TypeScript (strict), Tailwind CSS v4, shadcn/
 ## Security Rules — Non-Negotiable
 - Never create a table without RLS policies in the same migration file
 - Never use the server Supabase client (`lib/supabase/server.ts`) in a client component
-- Never prefix `SUPABASE_SERVICE_ROLE_KEY` with `NEXT_PUBLIC_` — never reference it in any client-side file
+- Never prefix `SUPABASE_SECRET_KEY` with `NEXT_PUBLIC_` — never reference it in any client-side file
 - All writes go through API routes — the browser never writes to Supabase directly
 - Validate session at the top of every API route before any other operation
 

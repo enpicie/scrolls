@@ -52,6 +52,6 @@ Reference: https://nextjs.org/docs/app/building-your-application/routing/middlew
 
 ## Environment Variables
 `NEXT_PUBLIC_` prefix exposes variables to the browser bundle. Never use this prefix for secrets.
-`SUPABASE_SERVICE_ROLE_KEY` must never have the `NEXT_PUBLIC_` prefix.
+`SUPABASE_SECRET_KEY` must never have the `NEXT_PUBLIC_` prefix.
 
 Reference: https://nextjs.org/docs/app/building-your-application/configuring/environment-variables

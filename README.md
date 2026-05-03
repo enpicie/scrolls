@@ -41,8 +41,8 @@ See [.env.example](.env.example) for all variables with inline documentation.
 
 Required to run locally:
 - `NEXT_PUBLIC_SUPABASE_URL` — from your Supabase project dashboard
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — from your Supabase project dashboard
-- `SUPABASE_SERVICE_ROLE_KEY` — keep secret, never expose to browser
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — from your Supabase project dashboard
+- `SUPABASE_SECRET_KEY` — keep secret, never expose to browser
 
 ---
 
@@ -84,16 +84,16 @@ migration steps are added to the deploy workflow.
 
 ## Initial Setup TODOs
 
-- [ ] Copy `.env.example` to `.env.local` and fill in real Supabase values
-- [ ] Create Supabase project, copy URL and keys to `.env.local`
-- [ ] Enable GitHub OAuth provider in Supabase Auth dashboard (add `repo` read scope)
-- [ ] Enable Google OAuth provider in Supabase Auth dashboard
-- [ ] Run `supabase db push` to apply all migrations
-- [ ] Connect repo to Vercel, enable auto-deploy on push to `main`
-- [ ] Add all env vars to Vercel project settings (Settings → Environment Variables)
-- [ ] Create Sentry project, add `SENTRY_DSN` to `.env.local` and Vercel env vars
-- [ ] Create Anthropic API key, add `ANTHROPIC_API_KEY` to `.env.local` and Vercel env vars
-- [ ] Verify `make dev` starts the full local stack cleanly
+- [x] Copy `.env.example` to `.env.local` and fill in real Supabase values
+- [x] Create Supabase project, copy URL and keys to `.env.local`
+- [x] Enable GitHub OAuth provider in Supabase Auth dashboard (add `repo` read scope)
+- [x] Enable Google OAuth provider in Supabase Auth dashboard
+- [x] Run `supabase db push` to apply all migrations
+- [x] Connect repo to Vercel, enable auto-deploy on push to `main`
+- [x] Add all env vars to Vercel project settings (Settings → Environment Variables)
+- [x] Create Sentry project, add `SENTRY_DSN` to `.env.local` and Vercel env vars
+- [x] Create Anthropic API key, add `ANTHROPIC_API_KEY` to `.env.local` and Vercel env vars
+- [x] Verify `make dev` starts the full local stack cleanly
 - [ ] Complete `.platform/data-model.md` with diagram
 - [ ] Complete `.platform/scaling-plan.md` with current thresholds
 - [ ] Update README status badge to correct value

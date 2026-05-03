@@ -8,7 +8,7 @@
 
 1. **Check requirements**: `make check`
 2. **Install dependencies**: `make setup` (runs `npm install` and copies `.env.example` to `.env.local`)
-3. **Fill in env vars**: Edit `.env.local` — you need at minimum `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+3. **Fill in env vars**: Edit `.env.local` — you need at minimum `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 4. **Create a Supabase project**: https://app.supabase.com — free tier is fine for local dev
 5. **Apply migrations**: `supabase db push`
 6. **Start the app**: `make dev` → http://localhost:3000
