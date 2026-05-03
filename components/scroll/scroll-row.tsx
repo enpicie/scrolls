@@ -21,7 +21,7 @@ export function ScrollRow({ scroll, ownerSlug, className }: ScrollRowProps) {
     <Link
       href={href}
       className={cn(
-        'flex items-center gap-4 rounded-lg border border-border bg-card px-4 py-3 transition hover:bg-accent',
+        'flex items-center gap-4 rounded-lg border border-border bg-card px-4 py-3 transition-colors hover:bg-accent',
         className
       )}
     >

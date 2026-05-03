@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Plus } from 'lucide-react'
+import { Plus, ScrollText, Heart, Users } from 'lucide-react'
 
 export default async function DashboardPage() {
   const supabase = await createServerClient()
@@ -44,26 +44,32 @@ export default async function DashboardPage() {
         </TabsList>
 
         <TabsContent value="my-scrolls" className="mt-6">
-          <div className="rounded-lg border border-dashed border-border p-12 text-center">
-            <p className="text-muted-foreground">No scrolls yet.</p>
-            <Button className="mt-4" asChild>
+          <div className="flex flex-col items-center rounded-lg border border-dashed border-border px-8 py-16 text-center">
+            <ScrollText className="mb-3 h-8 w-8 text-muted-foreground/50" />
+            <p className="font-medium">No scrolls yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">Publish your first platform spec to the marketplace.</p>
+            <Button className="mt-6" asChild>
               <Link href="/scrolls/new">Create your first scroll</Link>
             </Button>
           </div>
         </TabsContent>
 
         <TabsContent value="favorites" className="mt-6">
-          <div className="rounded-lg border border-dashed border-border p-12 text-center">
-            <p className="text-muted-foreground">No favorites yet.</p>
-            <Button variant="outline" className="mt-4" asChild>
+          <div className="flex flex-col items-center rounded-lg border border-dashed border-border px-8 py-16 text-center">
+            <Heart className="mb-3 h-8 w-8 text-muted-foreground/50" />
+            <p className="font-medium">No favorites yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">Save scrolls you want to revisit or use in your projects.</p>
+            <Button variant="outline" className="mt-6" asChild>
               <Link href="/browse">Browse the marketplace</Link>
             </Button>
           </div>
         </TabsContent>
 
         <TabsContent value="teams" className="mt-6">
-          <div className="rounded-lg border border-dashed border-border p-12 text-center">
-            <p className="text-muted-foreground">You are not a member of any teams.</p>
+          <div className="flex flex-col items-center rounded-lg border border-dashed border-border px-8 py-16 text-center">
+            <Users className="mb-3 h-8 w-8 text-muted-foreground/50" />
+            <p className="font-medium">No teams yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">Teams let you publish scrolls under a shared org identity.</p>
           </div>
         </TabsContent>
       </Tabs>

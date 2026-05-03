@@ -25,7 +25,7 @@ export function ScrollCard({ scroll, ownerSlug, className }: ScrollCardProps) {
   const ownerInitial = ownerName[0]?.toUpperCase() ?? '?'
 
   return (
-    <Card className={cn('group overflow-hidden transition hover:shadow-md', className)}>
+    <Card className={cn('group overflow-hidden transition-shadow hover:shadow-md', className)}>
       {/* Color band */}
       <div className={cn('h-2 w-full', colorBandMap[scroll.scroll_type])} />
 

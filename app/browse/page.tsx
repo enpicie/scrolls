@@ -4,7 +4,7 @@ import { ScrollRow } from '@/components/scroll/scroll-row'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { TypeBadge } from '@/components/scroll/type-badge'
-import { LayoutGrid, List, Search } from 'lucide-react'
+import { LayoutGrid, List, Search, SearchX } from 'lucide-react'
 import type { Scroll, ScrollType } from '@/types'
 
 interface BrowsePageProps {
@@ -108,7 +108,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
             <div className="flex flex-col gap-1">
               <a
                 href={`?${new URLSearchParams({ ...(q ? { q } : {}), sort, view })}`}
-                className={`rounded-md px-2 py-1.5 text-sm transition hover:bg-accent ${!type ? 'bg-accent font-medium' : ''}`}
+                className={`rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${!type ? 'bg-accent font-medium' : ''}`}
               >
                 All types
               </a>
@@ -116,7 +116,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
                 <a
                   key={t}
                   href={`?${new URLSearchParams({ ...(q ? { q } : {}), type: t, sort, view })}`}
-                  className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition hover:bg-accent ${type === t ? 'bg-accent font-medium' : ''}`}
+                  className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${type === t ? 'bg-accent font-medium' : ''}`}
                 >
                   <TypeBadge type={t} size="sm" />
                 </a>
@@ -146,8 +146,10 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
         {/* Results */}
         <div className="flex-1">
           {scrolls.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-border p-12 text-center text-muted-foreground">
-              No specs found.
+            <div className="flex flex-col items-center rounded-lg border border-dashed border-border px-8 py-16 text-center">
+              <SearchX className="mb-3 h-8 w-8 text-muted-foreground/50" />
+              <p className="font-medium">No specs found</p>
+              <p className="mt-1 text-sm text-muted-foreground">Try adjusting your search or filters.</p>
             </div>
           ) : view === 'card' ? (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

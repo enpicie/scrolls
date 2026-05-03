@@ -78,7 +78,7 @@ export async function Nav() {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="rounded-full ring-2 ring-transparent transition hover:ring-border focus-visible:outline-none focus-visible:ring-ring">
+                <button className="rounded-full ring-2 ring-transparent transition-shadow hover:ring-border focus-visible:outline-none focus-visible:ring-ring">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={profile?.avatar_url ?? undefined} alt={profile?.display_name} />
                     <AvatarFallback className="text-xs">{initials}</AvatarFallback>

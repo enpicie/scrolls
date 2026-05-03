@@ -34,11 +34,11 @@ export default function DocsPage() {
         {/* Sticky sidebar nav */}
         <aside className="mb-8 hidden w-52 shrink-0 lg:block">
           <nav className="sticky top-6 flex flex-col gap-1 text-sm">
-            <a href="#what-is-a-scroll" className="text-muted-foreground hover:text-foreground transition-colors py-0.5">What is a Scroll?</a>
-            <a href="#finding-scrolls" className="text-muted-foreground hover:text-foreground transition-colors py-0.5">Finding the right Scrolls</a>
-            <a href="#pulling" className="text-muted-foreground hover:text-foreground transition-colors py-0.5">Pulling a Scroll</a>
-            <a href="#claude-code" className="text-muted-foreground hover:text-foreground transition-colors py-0.5">Using with Claude Code</a>
-            <a href="#example" className="text-muted-foreground hover:text-foreground transition-colors py-0.5">A worked example</a>
+            <a href="#what-is-a-scroll" className="rounded py-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">What is a Scroll?</a>
+            <a href="#finding-scrolls" className="rounded py-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Finding the right Scrolls</a>
+            <a href="#pulling" className="rounded py-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Pulling a Scroll</a>
+            <a href="#claude-code" className="rounded py-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Using with Claude Code</a>
+            <a href="#example" className="rounded py-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">A worked example</a>
           </nav>
         </aside>
 

@@ -16,7 +16,7 @@ export function SignOutMenuItem() {
   }
 
   return (
-    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 focus:text-red-600">
+    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
       <LogOut className="mr-2 h-4 w-4" />
       Sign out
     </DropdownMenuItem>

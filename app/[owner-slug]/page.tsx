@@ -2,7 +2,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ScrollCard } from '@/components/scroll/scroll-card'
-import { Globe } from 'lucide-react'
+import { Globe, ScrollText } from 'lucide-react'
 import type { Scroll } from '@/types'
 
 interface PublisherProfilePageProps {
@@ -105,8 +105,10 @@ export default async function PublisherProfilePage({ params }: PublisherProfileP
       {/* Scrolls */}
       <h2 className="mb-4 text-lg font-semibold">Published Scrolls</h2>
       {scrolls.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
-          No published scrolls yet.
+        <div className="flex flex-col items-center rounded-lg border border-dashed border-border px-8 py-16 text-center">
+          <ScrollText className="mb-3 h-8 w-8 text-muted-foreground/50" />
+          <p className="font-medium">No published scrolls yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">This publisher hasn&apos;t released any specs yet.</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -185,7 +185,7 @@ export function ScrollEditorShell({ mode, scroll, teamMemberships }: ScrollEdito
                   <button
                     key={t}
                     onClick={() => setScrollType(t)}
-                    className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition ${
+                    className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
                       scrollType === t ? 'bg-accent font-medium' : 'hover:bg-accent/50'
                     }`}
                   >
