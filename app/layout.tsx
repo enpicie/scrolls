@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Nav } from '@/components/layout/nav'
+import { Footer } from '@/components/layout/footer'
 import './globals.css'
 
 const geistSans = Geist({
@@ -29,7 +31,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <Nav />
+        <main className="flex flex-1 flex-col">
+          {children}
+        </main>
+        <Footer />
         <Analytics />
         <SpeedInsights />
       </body>
