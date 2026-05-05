@@ -19,11 +19,8 @@ function getSnapshot(): 'dark' | 'light' {
   return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
 }
 
-// Server (and initial hydration) snapshot — must match what the FOUC script
-// produces for the *default* state so there is no structural mismatch.
-// The FOUC script in layout.tsx has already set .dark on <html> before React
-// hydrates, so suppressHydrationWarning on the dynamic attributes is enough
-// to handle the difference in initial props.
+// SSR snapshot: the server has already applied the correct class via the cookie,
+// so suppressHydrationWarning on the dynamic attributes handles any mismatch.
 function getServerSnapshot(): 'dark' | 'light' {
   return 'light'
 }
@@ -34,11 +31,13 @@ export function ThemeToggle() {
 
   const toggle = useCallback(() => {
     const next = !isDark
+    const value = next ? 'dark' : 'light'
     document.documentElement.classList.toggle('dark', next)
     try {
-      localStorage.setItem('scrolls-theme', next ? 'dark' : 'light')
+      localStorage.setItem('scrolls-theme', value)
+      document.cookie = `scrolls-theme=${value};path=/;max-age=31536000;SameSite=Lax`
     } catch {
-      // localStorage unavailable in some sandboxed contexts
+      // storage unavailable in some sandboxed contexts
     }
   }, [isDark])
 

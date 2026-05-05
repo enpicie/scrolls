@@ -32,12 +32,15 @@ Every API route follows this exact sequence:
 - Route params (`params`, `searchParams`) in layouts and pages are async — always `await` them
 - Server Actions use `'use server'` directive
 - `createServerClient()` in `lib/supabase/server.ts` is async — always `await` it
-- **Never render `<script>` tags directly in JSX** — React 19 warns "Scripts inside React
-  components are never executed when rendering on the client" even for Server Components.
-  Always use `next/script` with the appropriate strategy instead:
-  - Inline FOUC/init scripts: `<Script id="…" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: code }}>`
-  - Third-party scripts: `strategy="afterInteractive"` or `"lazyOnload"`
-  - `beforeInteractive` extracts the script from React's tree entirely and hoists it to `<head>`
+- **Never use a `<script>` tag (or `next/script`) for FOUC prevention or theme init.**
+  React 19 warns "Scripts inside React components are never executed when rendering on the
+  client" for any `<script>` tag anywhere in the React tree — Server Components, Client
+  Components, `<head>`, `<body>`, and via `next/script` all trigger it without exception.
+  The correct pattern is **cookie-based SSR theme detection**: write `scrolls-theme=dark`
+  to `document.cookie` whenever the user toggles, then read `cookies().get('scrolls-theme')`
+  in the async root layout and apply the `.dark` class server-side on `<html>`. No script
+  tag required, no FOUC, no React 19 warning.
+  - Third-party scripts: use `<Script strategy="afterInteractive">` or `<Script strategy="lazyOnload">` from `next/script`.
 
 ## Do Not Modify Without Explicit Instruction
 - `lib/supabase/client.ts` and `lib/supabase/server.ts`
@@ -61,7 +64,7 @@ Applied everywhere a scroll type appears (cards, list rows, detail page header, 
 
 ## Design Standards
 
-Source: scroll-design-general (Personal Org Standard) v1.2
+Source: scroll-design-general (Personal Org Standard) v2.0
 
 ### Project Color Palette
 All colors are CSS custom properties — never hardcode hex or oklch values in component files.
@@ -120,6 +123,43 @@ Named layers — use only these values (Tailwind z-index utilities map directly)
 - `z-[60]` (60) — toasts / notifications (above modals)
 Never use arbitrary z-index values (`z-[9999]`, inline style z-index) — always use this scale.
 
+### Layout Mode Registry
+Every route has a layout mode. The mode determines max-width and column sizing — do not carry reading constraints into tool views.
+
+| Route | Mode | Width contract |
+|-------|------|---------------|
+| `/` | Marketing | `max-w-7xl` containers; hero copy narrower |
+| `/browse` | Tool | No max-width cap — filter sidebar + content grid fill available width |
+| `/dashboard` | Tool | `max-w-7xl`, tabbed data views |
+| `/[owner-slug]` | Reading/profile | `max-w-4xl`, single column |
+| `/[owner-slug]/[scroll-slug]` | Reading | `max-w-4xl`, single column with metadata sidebar |
+| `/docs` | Reading | `max-w-3xl`, single column |
+| `/scrolls/new` | Tool | No max-width — editor shell + guided editor + metadata sidebar, all `flex-1` |
+| `/scrolls/[id]/edit` | Tool | No max-width — same as above |
+| `/teams/[slug]` | Reading/profile | `max-w-4xl` |
+| `/teams/[slug]/settings` | Editing | `max-w-2xl` form |
+
+**Rule: when a feature adds a second side-by-side content pane, the view promotes to tool mode.** Remove any reading/editing max-width. All panes use `flex-1 min-w-0`. Verify at 1440px and 1920px that both panes expand. Add the new route to this table.
+
+### Layout Mode Rules
+- **Reading** — `max-w-2xl` to `max-w-3xl`, centered, single column, line length is the constraint
+- **Editing** — `max-w-3xl` to `max-w-4xl`, editor column with optional fixed-width metadata sidebar
+- **Tool** — no reading max-width. All content panes: `flex-1 min-w-0`. No fixed pixel widths on content columns. Must visibly expand between 1280px and 1920px.
+- **Marketing** — `max-w-7xl` containers, section-specific narrowing for headline copy
+
+Secondary panes in tool mode: hide (`hidden xl:block` or breakpoint equivalent) when the primary column would drop below ~380px readable width. The primary column fills the vacated space — never leave dead space.
+
+### Component Defaults
+Starting points that produce correct output without further instruction:
+- **Card padding**: `p-6` default, `p-4` compact
+- **Button padding**: `px-4 py-2 text-sm` (md), `px-3 py-1.5 text-sm` (sm)
+- **Icon + label gap**: `gap-2`, always `items-center` on the flex container
+- **Form field spacing**: `space-y-4` between fields, `space-y-1.5` between label and input
+- **Section spacing**: `gap-8` or `gap-12` between major content blocks
+- **Empty state**: `flex flex-col items-center py-12 text-center` — icon (`h-8 w-8 text-muted-foreground/50`) + `font-medium` heading + `text-sm text-muted-foreground mt-1` description + optional CTA `mt-6`
+- **Skeleton**: `animate-pulse bg-muted rounded` — shape must match the content it replaces
+- **Sticky chrome background**: always `bg-card` or `bg-background` (solid) — never transparent over scrolled content
+
 ### Project-Specific Overrides
 - **Theme transition on `*`**: `globals.css` applies a blanket `transition-property: color, background-color, border-color, fill, stroke, box-shadow` on all elements under `prefers-reduced-motion: no-preference` for smooth dark mode switching. Component-level Tailwind transition classes override this with their own (faster) timing — this is intentional and not a CSS specificity bug.
 - **Parchment background**: Light mode uses a warm off-white (`oklch(0.984 0.016 88)`) intentionally — not pure white. Do not replace with `white` or `#fff`.
@@ -133,7 +173,7 @@ Never use arbitrary z-index values (`z-[9999]`, inline style z-index) — always
 - No `outline: none` without a custom focus indicator replacing it — use `focus-visible:ring-*`
 - No empty states left as blank containers — every list/table view has a designed empty state
 - No horizontal scroll at any standard viewport width
-- Content max-width enforced (`max-w-7xl` + `mx-auto`) — no edge-to-edge stretch on wide screens
+- Max-width is mode-dependent — see Layout Mode Registry. Never apply a reading max-width to a tool-mode view. Tool mode fills available width; reading mode constrains line length.
 - Transitions specify the property — `transition-colors`, `transition-transform`, never `transition-all`
 - State changes animate only `transform` and `opacity` for motion effects — never `width`, `height`, `margin`, `padding`
 
@@ -146,6 +186,13 @@ Never use arbitrary z-index values (`z-[9999]`, inline style z-index) — always
 - No animating layout properties (`w-`, `h-`, `m-`, `p-`, `top-`, `left-`) for motion effects
 - Font sizes in `rem` (Tailwind `text-*` utilities) — never inline `style={{ fontSize: '14px' }}`
 - No `overflow-hidden` as a lazy fix — fix the layout causing the overflow
+- `min-width: 0` on all flex children that contain text — prevents text from forcing parent to overflow
+
+**Layout:**
+- Tool-mode views have no reading max-width — all content panes use `flex-1 min-w-0`, not fixed widths
+- No fixed pixel width (`w-80`, `w-64`, etc.) on any column containing dynamic or user-authored text
+- All layouts verified at 375px, 768px, 1280px, 1440px, 1920px — tool-mode layouts must expand between 1280px and 1920px, not hit a cap
+- Secondary panes collapse at the breakpoint where they would become unreadably narrow (<380px) rather than cramming — primary pane fills the vacated space
 
 **Sustainability:**
 - No one-off inline `style={}` patches — fix the system
