@@ -309,7 +309,6 @@ export function ScrollEditorShell({ mode, scroll, teamMemberships }: ScrollEdito
       <div className="flex flex-1 overflow-hidden">
         {/* Content area */}
         <div className="flex flex-1 flex-col overflow-auto p-4 sm:p-6">
-          <div className="mx-auto w-full max-w-4xl">
             {error && (
               <div className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                 {error}
@@ -399,7 +398,6 @@ export function ScrollEditorShell({ mode, scroll, teamMemberships }: ScrollEdito
                 </div>
               </TabsContent>
             </Tabs>
-          </div>
         </div>
 
         {/* Metadata sidebar — desktop only */}

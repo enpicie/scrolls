@@ -129,25 +129,75 @@ Every route has a layout mode. The mode determines max-width and column sizing �
 | Route | Mode | Width contract |
 |-------|------|---------------|
 | `/` | Marketing | `max-w-7xl` containers; hero copy narrower |
-| `/browse` | Tool | No max-width cap — filter sidebar + content grid fill available width |
+| `/browse` | Catalogue | `max-w-7xl` centered — promotes to Tool (no max-width, `flex-1` panes) only when a filter sidebar is added alongside the grid |
 | `/dashboard` | Tool | `max-w-7xl`, tabbed data views |
 | `/[owner-slug]` | Reading/profile | `max-w-4xl`, single column |
 | `/[owner-slug]/[scroll-slug]` | Reading | `max-w-4xl`, single column with metadata sidebar |
-| `/docs` | Reading | `max-w-3xl`, single column |
+| `/docs` | Reading | `max-w-7xl` outer; sidebar (`w-48`) in left gutter (hidden below `lg`); reading content `max-w-3xl min-w-0`; mobile shows "On this page" list above content |
 | `/scrolls/new` | Tool | No max-width — editor shell + guided editor + metadata sidebar, all `flex-1` |
 | `/scrolls/[id]/edit` | Tool | No max-width — same as above |
 | `/teams/[slug]` | Reading/profile | `max-w-4xl` |
 | `/teams/[slug]/settings` | Editing | `max-w-2xl` form |
 
-**Rule: when a feature adds a second side-by-side content pane, the view promotes to tool mode.** Remove any reading/editing max-width. All panes use `flex-1 min-w-0`. Verify at 1440px and 1920px that both panes expand. Add the new route to this table.
+**Rule: when a feature adds a second side-by-side content pane, the view promotes to Shell.** Remove any `max-w-*` constraint from content columns. All panes use `flex-1 min-w-0`. Verify at 1440px and 1920px that both panes expand. Add the new route to this table.
 
-### Layout Mode Rules
-- **Reading** — `max-w-2xl` to `max-w-3xl`, centered, single column, line length is the constraint
-- **Editing** — `max-w-3xl` to `max-w-4xl`, editor column with optional fixed-width metadata sidebar
-- **Tool** — no reading max-width. All content panes: `flex-1 min-w-0`. No fixed pixel widths on content columns. Must visibly expand between 1280px and 1920px.
-- **Marketing** — `max-w-7xl` containers, section-specific narrowing for headline copy
+### Layout Families — Two Only, Never Mixed
 
-Secondary panes in tool mode: hide (`hidden xl:block` or breakpoint equivalent) when the primary column would drop below ~380px readable width. The primary column fills the vacated space — never leave dead space.
+Every page belongs to exactly one family. Mixing them produces broken layouts that cannot be fixed by tweaking classes.
+
+#### Family 1 — Content (page scrolls naturally)
+
+The page body has natural height. Content determines how tall it is. The browser scrolls it.
+
+```
+<main class="flex flex-1 flex-col">          ← root layout (already set)
+  <div class="mx-auto w-full max-w-X px-4 sm:px-6 py-12">
+    ...page content...
+  </div>
+</main>
+```
+
+One container. One max-width. Nothing else. Max-width by purpose:
+
+| Purpose | Class | px |
+|---|---|---|
+| Catalogue / dashboard (nav-aligned) | `max-w-7xl` | 1280 |
+| Profile / reading with sidebar | `max-w-4xl` | 896 |
+| Prose reading column | `max-w-3xl` | 768 |
+| Forms / settings | `max-w-2xl` | 672 |
+
+`max-w-7xl` is the reference — the nav uses it. Align full-width content pages to it.
+
+**Hard rules for Content pages:**
+- Never `overflow-hidden` or `flex-1` on the page root — it traps or hides scrollable content
+- Never nest a second `mx-auto max-w-*` container inside the page container
+- Never use padding to compensate for missing max-width (`2xl:px-24` is a smell — use `max-w-*` instead)
+
+#### Family 2 — Shell (fills viewport height, no page scroll)
+
+The shell fills exactly the remaining viewport after the nav. Content panes scroll internally. The page never scrolls.
+
+```
+<main class="flex flex-1 flex-col">                     ← root layout (already set)
+  <div class="flex flex-1 overflow-hidden">              ← shell root
+    <div class="flex-1 min-w-0 overflow-auto p-4 sm:p-6">   ← content pane
+    <aside class="w-72 shrink-0 border-l overflow-auto">     ← fixed panel
+  </div>
+</main>
+```
+
+**Hard rules for Shell pages:**
+- Never `max-w-*` on any content pane — panes must grow to fill available space
+- Every content pane: `flex-1 min-w-0` — `min-w-0` prevents flex children from overflowing their container
+- Every fixed panel (sidebar, drawer): `shrink-0` with an explicit `w-*` — never `flex-1`
+- Never `overflow-hidden` inside `overflow-auto` — it traps content that needs to scroll
+- Secondary panes collapse (`hidden xl:block`) when the primary column would drop below ~380px; primary fills the vacated space
+
+#### Why mixing breaks things
+
+- `mx-auto max-w-*` inside a Shell pane caps the pane width and leaves dead space at wide viewports — the two-column preview looks like one column
+- `flex-1 overflow-hidden` on a Content page root clips content below the fold with no scroll — content disappears
+- `w-full` or `max-w-*` on a Shell flex pane takes all available space, leaving zero width for sibling panes
 
 ### Component Defaults
 Starting points that produce correct output without further instruction:

@@ -27,23 +27,48 @@ Do not make any changes to the repository until I have reviewed the audit report
 
 const SESSION_PROMPT = `Read CLAUDE.md before doing anything else. This project follows the platform specs referenced there. Treat CLAUDE.md as your source of truth for conventions in this codebase. If you are unsure whether something conforms to the project standards, ask before writing code.`
 
+const NAV_LINKS = [
+  { href: '#what-is-a-scroll', label: 'What is a Scroll?' },
+  { href: '#finding-scrolls', label: 'Finding the right Scrolls' },
+  { href: '#pulling', label: 'Pulling a Scroll' },
+  { href: '#claude-code', label: 'Using with Claude Code' },
+  { href: '#example', label: 'A worked example' },
+]
+
+const navLinkClass =
+  'rounded py-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+
 export default function DocsPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <div className="lg:flex lg:gap-12">
-        {/* Sticky sidebar nav */}
-        <aside className="mb-8 hidden w-52 shrink-0 lg:block">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      {/* Mobile: on this page — hidden at lg+ where the sidebar takes over */}
+      <nav className="mb-8 lg:hidden">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          On this page
+        </p>
+        <div className="flex flex-col gap-1 text-sm">
+          {NAV_LINKS.map(({ href, label }) => (
+            <a key={href} href={href} className={navLinkClass}>
+              {label}
+            </a>
+          ))}
+        </div>
+      </nav>
+
+      <div className="flex gap-12">
+        {/* Sticky sidebar — desktop only, sits outside the reading column */}
+        <aside className="hidden w-48 shrink-0 lg:block">
           <nav className="sticky top-6 flex flex-col gap-1 text-sm">
-            <a href="#what-is-a-scroll" className="rounded py-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">What is a Scroll?</a>
-            <a href="#finding-scrolls" className="rounded py-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Finding the right Scrolls</a>
-            <a href="#pulling" className="rounded py-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Pulling a Scroll</a>
-            <a href="#claude-code" className="rounded py-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Using with Claude Code</a>
-            <a href="#example" className="rounded py-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">A worked example</a>
+            {NAV_LINKS.map(({ href, label }) => (
+              <a key={href} href={href} className={navLinkClass}>
+                {label}
+              </a>
+            ))}
           </nav>
         </aside>
 
-        {/* Main content */}
-        <div className="flex-1 prose prose-zinc max-w-none dark:prose-invert">
+        {/* Reading content — max-w-3xl keeps line length comfortable */}
+        <div className="min-w-0 w-full max-w-3xl prose prose-zinc dark:prose-invert">
           <h1>Guide</h1>
 
           {/* 1. What is a Scroll */}
@@ -111,7 +136,7 @@ export default function DocsPage() {
             <h3>New project — init prompt</h3>
             <p>Use this when starting from scratch. Replace <code>[FILE_LIST]</code> with your actual filenames.</p>
             <div className="not-prose relative group">
-              <pre className="overflow-x-auto rounded-lg bg-muted p-4 text-xs leading-relaxed">
+              <pre className="overflow-x-auto rounded-lg bg-muted p-4 text-xs leading-relaxed whitespace-pre-wrap">
                 {INIT_PROMPT}
               </pre>
               <CopyButton text={INIT_PROMPT} />
@@ -120,7 +145,7 @@ export default function DocsPage() {
             <h3>Existing project — audit prompt</h3>
             <p>Use this to audit a project that already exists.</p>
             <div className="not-prose relative group">
-              <pre className="overflow-x-auto rounded-lg bg-muted p-4 text-xs leading-relaxed">
+              <pre className="overflow-x-auto rounded-lg bg-muted p-4 text-xs leading-relaxed whitespace-pre-wrap">
                 {AUDIT_PROMPT}
               </pre>
               <CopyButton text={AUDIT_PROMPT} />
@@ -129,7 +154,7 @@ export default function DocsPage() {
             <h3>Ongoing sessions</h3>
             <p>Paste this at the start of any Claude Code session in your project.</p>
             <div className="not-prose relative group">
-              <pre className="overflow-x-auto rounded-lg bg-muted p-4 text-xs leading-relaxed">
+              <pre className="overflow-x-auto rounded-lg bg-muted p-4 text-xs leading-relaxed whitespace-pre-wrap">
                 {SESSION_PROMPT}
               </pre>
               <CopyButton text={SESSION_PROMPT} />

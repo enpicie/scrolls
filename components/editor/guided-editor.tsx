@@ -430,7 +430,7 @@ export const GuidedEditor = forwardRef<GuidedEditorHandle, GuidedEditorProps>(
 
         {/* Desktop side preview panel — only rendered on xl+ */}
         {previewOpen && (
-          <div className="sticky top-0 hidden w-full max-w-4xl shrink-0 self-start xl:block">
+          <div className="sticky top-0 hidden xl:block xl:flex-1 xl:min-w-0">
             <RawPanel compiledContent={compiledContent} />
           </div>
         )}

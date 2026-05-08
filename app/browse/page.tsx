@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { TypeBadge } from '@/components/scroll/type-badge'
 import { LayoutGrid, List, Search, SearchX } from 'lucide-react'
 import type { Scroll, ScrollType } from '@/types'
+import { cn } from '@/lib/utils'
 
 interface BrowsePageProps {
   searchParams: Promise<{
@@ -49,20 +50,15 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     tags: ((s as RawScroll).scroll_tags ?? []).map((st) => st.tags).filter((t): t is NonNullable<typeof t> => t !== null),
   }))
 
-  const { data: topTags } = await supabase
-    .from('tags')
-    .select('id, name, usage_count')
-    .order('usage_count', { ascending: false })
-    .limit(30)
-
   const SCROLL_TYPES: ScrollType[] = ['general', 'stack', 'app']
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold">Browse</h1>
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1 sm:w-64">
+    <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6">
+      {/* Header: title + search + view toggle — all in one row */}
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
+        <h1 className="shrink-0 text-2xl font-bold">Browse</h1>
+        <div className="flex flex-1 items-center gap-2">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <form>
               <Input
@@ -98,82 +94,112 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
         </div>
       </div>
 
-      <div className="flex gap-8">
-        {/* Sidebar filters */}
-        <aside className="hidden w-52 shrink-0 lg:block">
-          <div className="mb-6">
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Type
-            </h3>
-            <div className="flex flex-col gap-1">
-              <a
-                href={`?${new URLSearchParams({ ...(q ? { q } : {}), sort, view })}`}
-                className={`rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${!type ? 'bg-accent font-medium' : ''}`}
-              >
-                All types
-              </a>
-              {SCROLL_TYPES.map((t) => (
-                <a
-                  key={t}
-                  href={`?${new URLSearchParams({ ...(q ? { q } : {}), type: t, sort, view })}`}
-                  className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${type === t ? 'bg-accent font-medium' : ''}`}
-                >
-                  <TypeBadge type={t} size="sm" />
-                </a>
-              ))}
-            </div>
-          </div>
+      {/* Type filter chips — same width as header row above */}
+      <div className="mb-8 flex flex-wrap items-center gap-2">
+        <a
+          href={`?${new URLSearchParams({ ...(q ? { q } : {}), sort, view })}`}
+          className={cn(
+            'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+            !type
+              ? 'bg-foreground text-background'
+              : 'bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'
+          )}
+        >
+          All types
+        </a>
+        {SCROLL_TYPES.map((t) => (
+          <a
+            key={t}
+            href={`?${new URLSearchParams({ ...(q ? { q } : {}), type: t, sort, view })}`}
+            className={cn(
+              'rounded-full transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+              type === t ? 'opacity-100' : 'opacity-40 hover:opacity-70'
+            )}
+          >
+            <TypeBadge type={t} />
+          </a>
+        ))}
+      </div>
 
-          {topTags && topTags.length > 0 && (
-            <div>
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Popular Tags
-              </h3>
-              <div className="flex flex-wrap gap-1">
-                {topTags.slice(0, 20).map((tag) => (
-                  <span
-                    key={tag.id}
-                    className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
-                  >
-                    {tag.name}
-                  </span>
-                ))}
-              </div>
+      {/* Results — grid shares the full container width */}
+      {scrolls.length === 0 ? (
+        <div>
+          {(q || type) && (
+            <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+              <SearchX className="h-4 w-4 shrink-0" />
+              <span>No specs found — try adjusting your search or filters.</span>
             </div>
           )}
-        </aside>
-
-        {/* Results */}
-        <div className="flex-1">
-          {scrolls.length === 0 ? (
-            <div className="flex flex-col items-center rounded-lg border border-dashed border-border px-8 py-16 text-center">
-              <SearchX className="mb-3 h-8 w-8 text-muted-foreground/50" />
-              <p className="font-medium">No specs found</p>
-              <p className="mt-1 text-sm text-muted-foreground">Try adjusting your search or filters.</p>
-            </div>
-          ) : view === 'card' ? (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {scrolls.map((scroll) => {
-                const ownerSlug =
-                  scroll.owner_type === 'user'
-                    ? (scroll.owner_user as { display_name: string } | undefined)?.display_name?.toLowerCase().replace(/\s+/g, '-') ?? 'unknown'
-                    : (scroll.owner_team as { slug: string } | undefined)?.slug ?? 'unknown'
-                return <ScrollCard key={scroll.id} scroll={scroll} ownerSlug={ownerSlug} />
-              })}
+          {view === 'card' ? (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 opacity-40 pointer-events-none select-none">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="overflow-hidden rounded-lg border border-border bg-card">
+                  <div className="h-2 bg-muted" />
+                  <div className="space-y-3 p-4">
+                    <div className={cn('h-4 rounded bg-muted', i % 3 === 0 ? 'w-3/4' : i % 3 === 1 ? 'w-2/3' : 'w-4/5')} />
+                    <div className="flex items-center gap-1.5">
+                      <div className="h-4 w-4 rounded-full bg-muted" />
+                      <div className="h-3 w-1/4 rounded bg-muted" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="h-3 rounded bg-muted" />
+                      <div className="h-3 w-5/6 rounded bg-muted" />
+                    </div>
+                    <div className="flex gap-1">
+                      <div className="h-4 w-12 rounded-full bg-muted" />
+                      <div className="h-4 w-16 rounded-full bg-muted" />
+                    </div>
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="h-5 w-20 rounded-full bg-muted" />
+                      <div className="flex gap-3">
+                        <div className="h-3 w-8 rounded bg-muted" />
+                        <div className="h-3 w-8 rounded bg-muted" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
-            <div className="flex flex-col gap-2">
-              {scrolls.map((scroll) => {
-                const ownerSlug =
-                  scroll.owner_type === 'user'
-                    ? (scroll.owner_user as { display_name: string } | undefined)?.display_name?.toLowerCase().replace(/\s+/g, '-') ?? 'unknown'
-                    : (scroll.owner_team as { slug: string } | undefined)?.slug ?? 'unknown'
-                return <ScrollRow key={scroll.id} scroll={scroll} ownerSlug={ownerSlug} />
-              })}
+            <div className="flex flex-col gap-2 opacity-40 pointer-events-none select-none">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4 rounded-lg border border-border bg-card px-4 py-3">
+                  <div className="h-8 w-1 shrink-0 rounded-full bg-muted" />
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <div className={cn('h-4 rounded bg-muted', i % 2 === 0 ? 'w-2/3' : 'w-1/2')} />
+                    <div className="h-3 w-1/3 rounded bg-muted" />
+                  </div>
+                  <div className="hidden items-center gap-4 sm:flex">
+                    <div className="h-3 w-8 rounded bg-muted" />
+                    <div className="h-3 w-8 rounded bg-muted" />
+                  </div>
+                  <div className="h-4 w-4 shrink-0 rounded bg-muted" />
+                </div>
+              ))}
             </div>
           )}
         </div>
-      </div>
+      ) : view === 'card' ? (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          {scrolls.map((scroll) => {
+            const ownerSlug =
+              scroll.owner_type === 'user'
+                ? (scroll.owner_user as { display_name: string } | undefined)?.display_name?.toLowerCase().replace(/\s+/g, '-') ?? 'unknown'
+                : (scroll.owner_team as { slug: string } | undefined)?.slug ?? 'unknown'
+            return <ScrollCard key={scroll.id} scroll={scroll} ownerSlug={ownerSlug} />
+          })}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {scrolls.map((scroll) => {
+            const ownerSlug =
+              scroll.owner_type === 'user'
+                ? (scroll.owner_user as { display_name: string } | undefined)?.display_name?.toLowerCase().replace(/\s+/g, '-') ?? 'unknown'
+                : (scroll.owner_team as { slug: string } | undefined)?.slug ?? 'unknown'
+            return <ScrollRow key={scroll.id} scroll={scroll} ownerSlug={ownerSlug} />
+          })}
+        </div>
+      )}
     </div>
   )
 }
